@@ -11,9 +11,7 @@ struct GrowingTextEditor: View {
     @State private var dynamicHeight: CGFloat = 50
 
     var body: some View {
-
         ZStack(alignment: .topLeading) {
-
             Text(text.isEmpty ? "Enter Title" : text)
                 .font(.body)
                 .padding(8)
@@ -42,7 +40,7 @@ struct GrowingTextEditor: View {
         }
         .overlay(
             RoundedRectangle(cornerRadius: 8)
-            .stroke(Color.gray.opacity(0.4))
+                .stroke(Color.gray.opacity(0.4))
         )
     }
 }

@@ -25,3 +25,7 @@ struct EmptyStateView: View {
         .padding()
     }
 }
+
+#Preview {
+    EmptyStateView()
+}

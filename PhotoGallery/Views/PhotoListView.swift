@@ -4,6 +4,7 @@
 //
 //  Created by Krunal chaudhari on 13/06/26.
 //
+
 import SwiftUI
 import CoreData
 
@@ -14,78 +15,86 @@ struct PhotoListView: View {
     @State private var selectedPhoto: PhotoEntity?
 
     var body: some View {
-        if #available(iOS 16.0, *) {
-            NavigationStack {
-                List {
-                    ForEach(vm.photos) { photo in
-                        NavigationLink {
-                            PhotoDetailView(photo: photo, viewModel: vm)
-                        } label: {
-                            PhotoRowView(photo: photo)
+        NavigationView {
+            List {
+                ForEach(vm.photos) { photo in
+                    NavigationLink {
+                        PhotoDetailView(photo: photo, viewModel: vm)
+                    } label: {
+                        PhotoRowView(photo: photo)
+                    }
+                    .onAppear {
+                        // Prevent pagination while delete alert is active
+                        guard !showDeleteAlert else { return }
+                        
+                        guard let lastPhoto = vm.photos.last else {
+                            return
                         }
-                        .onAppear {
-                            guard vm.showDeleteAlertLoading else {
-                                return
-                            }
-                            
-                            guard let lastPhoto = vm.photos.last else {
-                                return
-                            }
-                            
-                            if photo.objectID == lastPhoto.objectID {
-                                vm.loadNextPage()
-                            }
+                        
+                        if photo.objectID == lastPhoto.objectID {
+                            vm.loadNextPage()
                         }
                     }
-                    .onDelete { indexSet in
-                        guard let index = indexSet.first else { return }
-                        selectedPhoto = vm.photos[index]
-                        vm.showDeleteAlertLoading = true
-                        showDeleteAlert = true
-                    }
                 }
-                .alert("Delete Photo",
-                       isPresented: $showDeleteAlert,
-                       presenting: selectedPhoto) { photo in
+                .onDelete { indexSet in
 
-                    Button("Delete", role: .destructive) {
-                        vm.deletePhoto(photo)
-                        vm.showDeleteAlertLoading = false
+                    guard let index = indexSet.first else {
+                        return
                     }
 
-                    Button("Cancel", role: .cancel) {
-                        vm.showDeleteAlertLoading = false
-                    }
-
-                } message: { _ in
-                    Text("Are you sure you want to delete this photo?")
+                    selectedPhoto = vm.photos[index]
+                    showDeleteAlert = true
                 }
-                .overlay {
-                    if vm.loading {
-                        ProgressView()
-                    } else if vm.photos.isEmpty {
-                        EmptyStateView()
-                    }
-                }
-                .overlay(alignment: .bottom) {
-                    if vm.showToast {
-                        ToastView(
-                            message: vm.toastMessage
-                        )
-                        .padding(.bottom, 30)
-                        .transition(
-                            .move(edge: .bottom)
-                                .combined(with: .opacity)
-                        )
-                    }
-                }
-                .navigationTitle("Photos")
             }
-            .task {
-                await vm.load()
+            .navigationTitle("Photos")
+            .navigationBarTitleDisplayMode(.large)
+            .alert("Delete Photo", isPresented: $showDeleteAlert, presenting: selectedPhoto) { photo in
+
+                Button("Delete", role: .destructive) {
+                    vm.deletePhoto(photo)
+                }
+
+                Button("Cancel", role: .cancel) {}
+
+            } message: { _ in
+                Text("Are you sure you want to delete this photo?")
             }
-        } else {
-            // Fallback on earlier versions
+            .overlay {
+                if vm.loading {
+                    ZStack {
+                        Color.black.opacity(0.1)
+                            .ignoresSafeArea()
+
+                        ProgressView("Loading...")
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(12)
+                    }
+
+                } else if vm.photos.isEmpty {
+                    EmptyStateView()
+                }
+            }
+            .overlay(alignment: .bottom) {
+                if vm.showToast {
+                    ToastView(
+                        message: vm.toastMessage
+                    )
+                    .padding(.bottom, 30)
+                    .transition(
+                        .move(edge: .bottom)
+                            .combined(with: .opacity)
+                    )
+                }
+            }
+        }
+        .navigationViewStyle(.stack)
+        .task {
+            await vm.load()
         }
     }
+}
+
+#Preview {
+    PhotoListView()
 }

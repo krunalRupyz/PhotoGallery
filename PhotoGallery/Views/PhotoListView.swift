@@ -24,23 +24,15 @@ struct PhotoListView: View {
                         PhotoRowView(photo: photo)
                     }
                     .onAppear {
-                        // Prevent pagination while delete alert is active
+                        // FIX: Delegate pagination to ViewModel to keep logic in one place
                         guard !showDeleteAlert else { return }
-                        
-                        guard let lastPhoto = vm.photos.last else {
-                            return
-                        }
-                        
-                        if photo.objectID == lastPhoto.objectID {
-                            vm.loadNextPage()
-                        }
+                        vm.shouldLoadNextPage(currentPhoto: photo)
                     }
                 }
                 .onDelete { indexSet in
-
-                    guard let index = indexSet.first else {
-                        return
-                    }
+                    // FIX: Bound-check to prevent crash if array changed
+                    guard let index = indexSet.first,
+                          index < vm.photos.count else { return }
 
                     selectedPhoto = vm.photos[index]
                     showDeleteAlert = true
@@ -49,13 +41,10 @@ struct PhotoListView: View {
             .navigationTitle("Photos")
             .navigationBarTitleDisplayMode(.large)
             .alert("Delete Photo", isPresented: $showDeleteAlert, presenting: selectedPhoto) { photo in
-
                 Button("Delete", role: .destructive) {
                     vm.deletePhoto(photo)
                 }
-
                 Button("Cancel", role: .cancel) {}
-
             } message: { _ in
                 Text("Are you sure you want to delete this photo?")
             }
@@ -64,13 +53,13 @@ struct PhotoListView: View {
                     ZStack {
                         Color.black.opacity(0.1)
                             .ignoresSafeArea()
+                            .accessibilityHidden(true)                    // FIX: a11y
 
                         ProgressView("Loading...")
                             .padding()
                             .background(.ultraThinMaterial)
                             .cornerRadius(12)
                     }
-
                 } else if vm.photos.isEmpty {
                     EmptyStateView()
                 }

@@ -16,7 +16,7 @@ A modern iOS application that fetches photos from a REST API, displays them in a
 - ✅ **Detail Screen Delete** — alternative delete via the detail view
 - ✅ **Empty State View** — shown when no records exist
 - ✅ **Loading Indicators** — during fetch and pagination
-- ✅ **Error Handling** — graceful network and Core Data error messages
+- ✅ **Error Handling** — graceful Core Data error messages
 
 ---
 

@@ -1,3 +1,4 @@
+
 # PhotoGallery iOS App
 
 A modern iOS application that fetches photos from a REST API, displays them in a paginated list, persists data using Core Data, and provides full CRUD operations (edit titles and delete records). Built with **SwiftUI** and following the **MVVM** architecture pattern.
@@ -214,6 +215,10 @@ https://github.com/user-attachments/assets/44ce20d9-4b46-42a6-9dbf-07c4654c40bb
 2. After the user can kill the app and load data from the coredata
 
 https://github.com/user-attachments/assets/78a18114-13d3-42a0-92b1-1add75a56ac2
+
+3. Empty screen 
+
+<img width="594" height="957" alt="Screenshot 2026-06-15 at 11 34 54 AM" src="https://github.com/user-attachments/assets/f7191ae5-e537-4fd0-bca1-f993f2d63cbc" />
 
 
 ## 🔄 Data Flow

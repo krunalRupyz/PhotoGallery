@@ -225,7 +225,7 @@ https://github.com/user-attachments/assets/78a18114-13d3-42a0-92b1-1add75a56ac2
 
 2. **Pagination (Load More)**
    - User scrolls near the bottom
-   - `onAppear` of last row triggers `loadMore()`
+   - `onAppear` of last row triggers `shouldLoadNextPage()`
    - Fetches next batch of 50 from API → saves to Core Data → appends to list
 
 3. **Edit Title**
